@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kenichi Studio | Typography Lab</title>
+    <!-- Logo Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../logos/variations/v2_black_bg.svg">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- 1. Outfit (Geometric Sans - Current) -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&display=swap" rel="stylesheet">
+    <!-- 2. Zen Tokyo Zoo (Japanese Brush Style) -->
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Tokyo+Zoo&display=swap" rel="stylesheet">
+    <!-- 3. Cinzel (Sharp / Blade-like) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <!-- 4. Syne (Artistic / Unique) -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #09090b;
+            --surface: #18181b;
+            --text: #ffffff;
+            --accent: #3b82f6;
+            --border: #27272a;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 { font-weight: 300; letter-spacing: -1px; margin-bottom: 60px; color: #a1a1aa; }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        .font-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 30px;
+            align-items: center;
+            transition: 0.3s ease;
+        }
+
+        .font-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .logo-preview img {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+        }
+
+        .text-preview {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .brand-name {
+            font-size: 3rem;
+            line-height: 1;
+            color: white;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.6;
+            font-weight: 300;
+        }
+
+        .meta {
+            margin-top: 15px;
+            display: inline-block;
+            font-family: 'Outfit', sans-serif; /* Keep meta readable */
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 4px 12px;
+            border-radius: 20px;
+            align-self: flex-start;
+        }
+
+        /* Font Specific Styles */
+        .f-outfit .brand-name { font-family: 'Outfit', sans-serif; font-weight: 800; letter-spacing: -2px; }
+        .f-outfit .tagline { font-family: 'Outfit', sans-serif; }
+
+        .f-zen .brand-name { font-family: 'Zen Tokyo Zoo', cursive; font-size: 3.5rem; letter-spacing: 2px; }
+        .f-zen .tagline { font-family: 'Outfit', sans-serif; letter-spacing: 1px; }
+
+        .f-cinzel .brand-name { font-family: 'Cinzel', serif; font-weight: 700; letter-spacing: -1px; }
+        .f-cinzel .tagline { font-family: 'Cinzel', serif; font-weight: 400; }
+
+        .f-syne .brand-name { font-family: 'Syne', sans-serif; font-weight: 800; }
+        .f-syne .tagline { font-family: 'Syne', sans-serif; }
+
+    </style>
+</head>
+<body>
+
+    <h1>Kenichi Typography Lab</h1>
+
+    <div class="container">
+
+        <!-- 1. Outfit -->
+        <div class="font-card f-outfit">
+            <div class="logo-preview">
+                <img src="../logos/variations/v1_gradient_bg.svg" alt="Logo">
+            </div>
+            <div class="text-preview">
+                <span class="meta">Current Standard</span>
+                <div class="brand-name">Kenichi Studio</div>
+                <div class="tagline">Simple Tools. Powerful Stories.</div>
+            </div>
+        </div>
+
+        <!-- 2. Zen Tokyo Zoo -->
+        <div class="font-card f-zen">
+            <div class="logo-preview">
+                <img src="../logos/variations/v3_white_bg.svg" alt="Logo">
+            </div>
+            <div class="text-preview">
+                <span class="meta">Brush Style</span>
+                <div class="brand-name">Kenichi Studio</div>
+                <div class="tagline">Simple Tools. Powerful Stories.</div>
+            </div>
+        </div>
+
+        <!-- 3. Cinzel -->
+        <div class="font-card f-cinzel">
+            <div class="logo-preview">
+                <img src="../logos/variations/v2_black_bg.svg" alt="Logo">
+            </div>
+            <div class="text-preview">
+                <span class="meta">Sharp / Blade</span>
+                <div class="brand-name">KENICHI STUDIO</div>
+                <div class="tagline">Simple Tools. Powerful Stories.</div>
+            </div>
+        </div>
+
+        <!-- 4. Syne -->
+        <div class="font-card f-syne">
+            <div class="logo-preview">
+                <img src="../logos/variations/v4_pale_red.svg" alt="Logo">
+            </div>
+            <div class="text-preview">
+                <span class="meta">Artistic Tech</span>
+                <div class="brand-name">Kenichi Studio</div>
+                <div class="tagline">Simple Tools. Powerful Stories.</div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

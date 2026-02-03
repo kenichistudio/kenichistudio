@@ -40,7 +40,7 @@ We have developed a system of 6 core variations to adapt to different contexts (
 | **V5** | **High Levitation** | **White BG**, Blue Mark, Deep Shadow | **MacOS** aesthetic, modern web landing pages. Feels airy and lightweight. |
 | **V6** | **Midnight Levitation** | **White BG**, Black Mark, Deep Shadow | **High Contrast** minimalism. A variation of V5 for when blue is too playful. |
 
-> **🎨 Asset Location**: All SVG source files are located in `variations/`.
+> **🎨 Asset Location**: All SVG source files and variations are located in `assets/logos/`.
 
 ---
 
@@ -78,7 +78,7 @@ We have developed a system of 6 core variations to adapt to different contexts (
 *   Use **V1 (Blue)** for the main "Kenichi Studio" web application link.
 *   Use **V2 (Obsidian)** for the "Kenichi Desktop" downloadable application.
 *   Use the **Gradient Logo** text style on dark backgrounds.
-*   Ensure the "K" mark always has sufficient breathing room (clear space).
+*   Ensure the "K-Cut" mark always has sufficient breathing room (clear space).
 
 ### Don't ❌
 *   Do not rotate the logo. The "Pillar" must remain vertical.
@@ -87,4 +87,4 @@ We have developed a system of 6 core variations to adapt to different contexts (
 
 ---
 
-*Document Drafted: Feb 2026*
+*Document Updated: Feb 2026*

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Kenichi Studio | The Origin</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/logos/variations/v1_gradient_bg.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+    <nav class="nav-pill">
+        <a href="../index.html" class="nav-brand">Kenichi.</a>
+        <div class="nav-links">
+            <a href="../index.html">Work</a>
+            <a href="#" class="active">About</a>
+            <a href="./download.html">Downloads</a>
+            <a href="../index.html#lab">Lab</a>
+        </div>
+        <button class="theme-btn" id="theme-toggle" aria-label="Toggle Theme">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="5" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </nav>
+
+    <div class="bg-mesh"></div>
+
+    <main class="container">
+        
+        <section class="hero hero-min">
+            <h1>The Origin of <br><span class="gradient-text">Precision.</span></h1>
+            <p>"Kenichi" (健一) means "Strong One". But for us, it represents the strength found in absolute clarity.</p>
+        </section>
+
+        <section class="container" style="max-width: 900px; padding-bottom: 8rem;">
+            
+            <div class="text-block reveal">
+                <h2>The Philosophy</h2>
+                <p>We believe that creative tools have become bloated, slow, and distracting. Modern software is filled with "features" that get in the way of the flow.</p>
+                <p>Kenichi Studio was founded to strip away the noise. To build engines that are not just fast, but <strong>immediate</strong>. Tools that feel like extensions of your mind.</p>
+            </div>
+
+            <div class="bento-grid reveal" style="margin-bottom: 6rem;">
+                <div class="card col-span-2">
+                    <div class="card-content">
+                        <h3>The K-Cut</h3>
+                        <p>Our symbol is the fusion of a timeline track and a precision blade.</p>
+                    </div>
+                     <div class="card-visual">
+                        <img src="../assets/logos/source/refine-logo.svg" style="max-height: 150px; opacity: 0.8;" alt="Geometry">
+                    </div>
+                </div>
+                <div class="card col-span-2">
+                    <div class="card-content">
+                        <h3>Engineered</h3>
+                        <p>Every pixel and every line of code is intentional.</p>
+                    </div>
+                    <div class="card-visual">
+                         <div style="font-family: monospace; color: var(--accent); opacity: 0.8; text-align: left; font-size: 0.85rem;">
+                            &lt;svg viewBox="0 0 1024"&gt;<br>
+                            &nbsp;&nbsp;&lt;path d="M321..."&gt;<br>
+                            &nbsp;&nbsp;&lt;defs&gt;<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&lt;linearGradient...&gt;
+                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-block reveal">
+                <h2>Our History</h2>
+                <ul style="list-style: none; margin-top: 2rem; border-left: 2px solid var(--border); padding-left: 2rem;">
+                    <li style="margin-bottom: 2rem;">
+                        <strong style="color: var(--text-main); display: block; margin-bottom: 0.5rem;">2024: The Solopreneur Era</strong>
+                        Started as "SimpleAryan", exploring the boundaries of web animation and performant UI.
+                    </li>
+                    <li style="margin-bottom: 2rem;">
+                        <strong style="color: var(--text-main); display: block; margin-bottom: 0.5rem;">2025: Kinetix Engine</strong>
+                        Development of the core motion engine. The need for better tooling became apparent.
+                    </li>
+                    <li style="margin-bottom: 2rem;">
+                        <strong style="color: var(--text-main); display: block; margin-bottom: 0.5rem;">2026: Kenichi Studio</strong>
+                        Rebranding to "The Strong One". Launch of the Video Player and the dedicated software suite.
+                    </li>
+                </ul>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        // Shared Logic (Theme/Reveal)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => entry.isIntersecting && entry.target.classList.add('active'));
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        const btn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        btn.addEventListener('click', () => {
+            const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        });
+        html.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
+    </script>
+</body>
+</html>

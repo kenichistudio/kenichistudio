@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kenichi Studio | The Future of Creative Tools</title>
+    <meta name="description" content="Kenichi Studio builds precision software for storytellers. Experience the next generation of creative tools.">
+    <link rel="icon" type="image/svg+xml" href="./assets/logos/variations/v1_gradient_bg.svg">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="./pages/style.css">
+</head>
+<body>
+
+    <nav class="nav-pill">
+        <a href="#" class="nav-brand">Kenichi.</a>
+        <div class="nav-links">
+            <a href="#" class="active">Work</a>
+            <a href="./pages/about.html">About</a>
+            <a href="./pages/download.html">Downloads</a>
+            <a href="#lab">Lab</a>
+        </div>
+        <button class="theme-btn" id="theme-toggle" aria-label="Toggle Theme">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="5" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </nav>
+
+    <div class="bg-mesh"></div>
+
+    <main class="container">
+        
+        <!-- Hero -->
+        <section class="hero">
+            <img src="./assets/logos/variations/v1_gradient_bg.svg" alt="Mark" class="hero-mark">
+            <h1>Engineered for <br><span class="gradient-text">The First Cut.</span></h1>
+            <p>A suite of high-performance creative tools designed for speed, precision, and modern storytelling.</p>
+            <div style="display: flex; gap: 1rem; opacity: 0; animation: slideUp 0.8s var(--ease-out) forwards 0.6s;">
+                <a href="https://github.com/kenichistudio/kinetix" class="btn btn-primary">Start Building</a>
+                <a href="./pages/download.html" class="btn btn-glass">Download App</a>
+            </div>
+        </section>
+
+        <!-- Bento Grid -->
+        <section class="bento-section" id="lab">
+            <div class="section-header reveal">
+                <h2>Design Ecosystem</h2>
+            </div>
+            
+            <div class="bento-grid">
+                
+                <!-- Card 1: Main Identity -->
+                <div class="card col-span-2 row-span-2 reveal">
+                    <div class="card-content">
+                        <h3>Kenichi Blue</h3>
+                        <p>The primary identity. Representing flow and adaptability across all platforms.</p>
+                    </div>
+                    <div class="card-visual">
+                        <img src="./assets/logos/variations/v1_gradient_bg.svg" style="max-height: 220px;" alt="V1">
+                    </div>
+                    <a href="./assets/logos/variations/v1_gradient_bg.svg" target="_blank" class="card-link">↗</a>
+                </div>
+
+                <!-- Card 2: Typography Lab -->
+                <div class="card reveal">
+                    <div class="card-content">
+                        <h3>Typography</h3>
+                        <p>Font preview & selection lab.</p>
+                    </div>
+                    <div class="card-visual">
+                        <h1 style="font-size: 3rem; line-height: 0.8;">Aa</h1>
+                    </div>
+                    <a href="./assets/font-preview.html" class="card-link">↗</a>
+                </div>
+
+                <!-- Card 3: Obsidian Mode -->
+                <div class="card reveal">
+                    <div class="card-content">
+                        <h3>Obsidian</h3>
+                        <p>Dark mode optimized.</p>
+                    </div>
+                    <div class="card-visual">
+                        <img src="./assets/logos/variations/v2_black_bg.svg" alt="V2">
+                    </div>
+                    <a href="./assets/logos/variations/v2_black_bg.svg" target="_blank" class="card-link">↗</a>
+                </div>
+
+                <!-- Card 4: Procedural Generation -->
+                <div class="card col-span-2 reveal">
+                    <div class="card-content">
+                        <h3>Procedural Core</h3>
+                        <p>All assets are generated via code. View the Logo Lab to see the engine in action.</p>
+                    </div>
+                    <div class="card-visual" style="justify-content: flex-start; gap: 20px;">
+                        <img src="./assets/logos/variations/v4_pale_red.svg" style="height: 80px;" alt="V4">
+                        <img src="./assets/logos/variations/v5_high_shadow.svg" style="height: 80px;" alt="V5">
+                        <img src="./assets/logos/variations/v3_white_bg.svg" style="height: 80px;" alt="V3">
+                    </div>
+                    <a href="./assets/logos/variations/preview.html" class="card-link">↗</a>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Scroll Reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Theme Toggle
+        const btn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        btn.addEventListener('click', () => {
+            const current = html.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        });
+
+        // Init Theme
+        const saved = localStorage.getItem('theme') || 'dark';
+        html.setAttribute('data-theme', saved);
+    </script>
+</body>
+</html>

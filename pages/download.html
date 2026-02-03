@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Downloads | Kenichi Studio</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/logos/variations/v1_gradient_bg.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+    <nav class="nav-pill">
+        <a href="../index.html" class="nav-brand">Kenichi.</a>
+        <div class="nav-links">
+            <a href="../index.html">Work</a>
+            <a href="./about.html">About</a>
+            <a href="#" class="active">Downloads</a>
+            <a href="../index.html#lab">Lab</a>
+        </div>
+        <button class="theme-btn" id="theme-toggle" aria-label="Toggle Theme">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="5" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </nav>
+
+    <div class="bg-mesh"></div>
+
+    <main class="container">
+        
+        <section class="hero hero-min">
+            <h1>Equip Your <span class="gradient-text">Studio.</span></h1>
+            <p>Access the latest builds of our creative software. Open source and free for personal use.</p>
+        </section>
+
+        <section class="bento-section reveal">
+            
+            <div class="bento-grid">
+                
+                <!-- Software 1: Kenichi Player -->
+                <div class="card col-span-2 row-span-2">
+                    <div class="card-content">
+                        <h3>Kenichi Player</h3>
+                        <p>The new standard for reference playback. GPU-accelerated, color-accurate, and distraction-free. Built to replace VLC for creatives.</p>
+                        <div style="margin-top: 2rem;">
+                            <span style="display:inline-block; font-size: 0.8rem; background: var(--surface); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); color: var(--accent);">v1.0.0-beta</span>
+                        </div>
+                    </div>
+                    <div class="card-visual">
+                         <!-- Placeholder App Icon -->
+                         <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #18181b, #000); border-radius: 24px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border);">
+                             <img src="../assets/logos/variations/v2_black_bg.svg" style="width: 80px; height: 80px;" alt="App Icon">
+                         </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: auto;">
+                        <button class="btn btn-primary" style="padding: 0.8rem 1.5rem; width: auto;">Download for Windows</button>
+                        <button class="btn btn-glass" style="padding: 0.8rem 1.5rem; width: auto; opacity: 0.5; cursor: not-allowed;">MacOS (Soon)</button>
+                    </div>
+                </div>
+
+                <!-- Software 2: Kinetix Engine -->
+                <div class="card col-span-2">
+                    <div class="card-content">
+                        <h3>Kinetix Engine</h3>
+                        <p>The high-performance motion graphics core powering our tools.</p>
+                    </div>
+                    <div class="card-visual" style="justify-content: flex-start;">
+                         <img src="../assets/logos/variations/v1_gradient_bg.svg" style="width: 60px; height: 60px; border-radius: 12px;" alt="Kinetix">
+                    </div>
+                    <a href="https://github.com/kenichistudio/kinetix" target="_blank" class="card-link">↗</a>
+                </div>
+
+                <!-- Software 3: Kenichi CLI -->
+                <div class="card">
+                    <div class="card-content">
+                        <h3>Kenichi CLI</h3>
+                        <p>Asset pipeline tools.</p>
+                    </div>
+                    <div class="card-visual">
+                        <code style="font-family: monospace; color: var(--text-muted);">> kenichi_</code>
+                    </div>
+                </div>
+
+                <!-- Release Notes -->
+                 <div class="card">
+                    <div class="card-content">
+                        <h3>Release Notes</h3>
+                        <p>View changelogs.</p>
+                    </div>
+                    <div class="card-visual">
+                        <svg width="40" height="40" fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><path d="M14 2v6h6"></path><path d="M16 13H8"></path><path d="M16 17H8"></path><path d="M10 9H8"></path></svg>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => entries.forEach(e => e.isIntersecting && e.target.classList.add('active')), { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        
+        const btn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        btn.addEventListener('click', () => {
+            const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        });
+        html.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
+    </script>
+</body>
+</html>
