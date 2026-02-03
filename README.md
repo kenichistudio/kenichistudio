@@ -1,4 +1,4 @@
-# 🎌 Kenichi Studio
+# ⚔️ Kenichi Studio
 
 <p align="center">
   <img src="./assets/logos/variations/v1_gradient_bg.svg" width="200" alt="Kenichi Logo">
