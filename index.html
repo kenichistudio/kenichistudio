@@ -20,17 +20,24 @@
     <nav class="nav-pill">
         <a href="#" class="nav-brand">Kenichi.</a>
         <div class="nav-links">
-            <a href="#" class="active">Work</a>
             <a href="./pages/about.html">About</a>
             <a href="./pages/download.html">Downloads</a>
-            <a href="#lab">Lab</a>
         </div>
-        <button class="theme-btn" id="theme-toggle" aria-label="Toggle Theme">
-            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="5" />
-                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-        </button>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button class="theme-btn" id="theme-toggle" aria-label="Toggle Theme">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="5" />
+                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+            <button class="mobile-toggle" id="mobile-toggle-btn" aria-label="Toggle Menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
     </nav>
 
     <div class="bg-mesh"></div>
@@ -111,6 +118,13 @@
 
     </main>
 
+    <!-- Mobile Menu Container -->
+    <div class="mobile-menu" id="mobile-menu">
+        <a href="./pages/about.html">About</a>
+        <a href="./pages/download.html">Downloads</a>
+    </div>
+
+    <!-- Script -->
     <script>
         // Scroll Reveal
         const observer = new IntersectionObserver((entries) => {
@@ -137,6 +151,30 @@
         // Init Theme
         const saved = localStorage.getItem('theme') || 'dark';
         html.setAttribute('data-theme', saved);
+
+        // Mobile Menu Logic
+        const menuBtn = document.getElementById('mobile-toggle-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('active');
+                
+                // Optional: Change icon state
+                const isOpen = mobileMenu.classList.contains('active');
+                menuBtn.innerHTML = isOpen 
+                    ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>'
+                    : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>';
+            });
+
+            // Close menu when clicking a link
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('active');
+                    menuBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>';
+                });
+            });
+        }
     </script>
 </body>
 </html>

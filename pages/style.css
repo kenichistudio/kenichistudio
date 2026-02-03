@@ -1,19 +1,22 @@
-
 /* Shared Styles for Kenichi Studio */
 /* Paths are relative to the CSS file location */
 
 :root {
     /* Palette: Deep Zinc & Electric Blue */
-    --bg: #09090b; /* Zinc 950 */
-    --surface: rgba(24, 24, 27, 0.6); /* Zinc 900 Glass */
-    --surface-card: rgba(39, 39, 42, 0.4); /* Zinc 800 Glass */
+    --bg: #09090b;
+    /* Zinc 950 */
+    --surface: rgba(24, 24, 27, 0.6);
+    /* Zinc 900 Glass */
+    --surface-card: rgba(39, 39, 42, 0.4);
+    /* Zinc 800 Glass */
     --border: rgba(255, 255, 255, 0.08);
     --border-hover: rgba(255, 255, 255, 0.15);
-    
+
     --text-main: #ffffff;
     --text-muted: #a1a1aa;
-    
-    --accent: #3b82f6; /* Blue 500 */
+
+    --accent: #3b82f6;
+    /* Blue 500 */
     --accent-glow: rgba(59, 130, 246, 0.4);
 
     --ease-out: cubic-bezier(0.25, 0.4, 0.25, 1);
@@ -33,7 +36,11 @@
 }
 
 /* Reset & Base */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body {
     font-family: 'Inter', sans-serif;
@@ -43,11 +50,17 @@ body {
     transition: background-color 0.5s ease;
 }
 
-h1, h2, h3, .brand-font {
+h1,
+h2,
+h3,
+.brand-font {
     font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-a { text-decoration: none; color: inherit; }
+a {
+    text-decoration: none;
+    color: inherit;
+}
 
 /* Utilities */
 .container {
@@ -80,7 +93,7 @@ a { text-decoration: none; color: inherit; }
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--border);
     border-radius: 99px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .nav-brand {
@@ -101,7 +114,10 @@ a { text-decoration: none; color: inherit; }
     transition: color 0.2s;
 }
 
-.nav-links a:hover, .nav-links a.active { color: var(--text-main); }
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--text-main);
+}
 
 .theme-btn {
     background: none;
@@ -151,8 +167,15 @@ a { text-decoration: none; color: inherit; }
 }
 
 @keyframes heroFloat {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(2deg); }
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-20px) rotate(2deg);
+    }
 }
 
 .hero h1 {
@@ -232,10 +255,40 @@ a { text-decoration: none; color: inherit; }
 }
 
 @media (max-width: 1024px) {
-    .bento-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; }
+    .bento-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: auto;
+    }
 }
-@media (max-width: 600px) {
-    .bento-grid { grid-template-columns: 1fr; }
+
+/* Force 1 column layout for tablets and mobile to prevent squished cards */
+@media (max-width: 768px) {
+    .bento-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .card {
+        padding: 1.5rem;
+        /* Reduce padding from 2.5rem */
+        border-radius: 24px;
+    }
+
+    .card-content h3 {
+        font-size: 1.25rem;
+    }
+
+    .card-visual img {
+        max-height: 140px;
+        /* Smaller images */
+    }
+
+    /* Reset spans for 1-column layout */
+    .col-span-2,
+    .row-span-2 {
+        grid-column: auto;
+        grid-row: auto;
+    }
 }
 
 .card {
@@ -254,12 +307,17 @@ a { text-decoration: none; color: inherit; }
 .card:hover {
     border-color: var(--border-hover);
     transform: translateY(-5px);
-    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
 }
 
 /* Card Sizes */
-.col-span-2 { grid-column: span 2; }
-.row-span-2 { grid-row: span 2; }
+.col-span-2 {
+    grid-column: span 2;
+}
+
+.row-span-2 {
+    grid-row: span 2;
+}
 
 /* Card Content */
 .card-content h3 {
@@ -284,7 +342,7 @@ a { text-decoration: none; color: inherit; }
     max-width: 100%;
     height: auto;
     max-height: 180px;
-    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
     transition: transform 0.5s var(--ease-elastic);
 }
 
@@ -308,7 +366,10 @@ a { text-decoration: none; color: inherit; }
     transition: all 0.3s var(--ease-out);
 }
 
-.card:hover .card-link { opacity: 1; transform: scale(1); }
+.card:hover .card-link {
+    opacity: 1;
+    transform: scale(1);
+}
 
 /* --- About & Text Layouts --- */
 .text-block {
@@ -340,6 +401,128 @@ a { text-decoration: none; color: inherit; }
 
 /* --- Animations --- */
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(40px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Mobile Navigation & Responsive Tweaks --- */
+
+/* Mobile Menu Button - Hidden by default */
+.mobile-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+}
+
+/* Mobile Layout (< 768px) */
+@media (max-width: 768px) {
+    .nav-pill {
+        width: 90%;
+        max-width: 400px;
+        justify-content: space-between;
+        padding: 0.75rem 1.5rem;
+    }
+
+    /* Hide standard nav links */
+    .nav-links {
+        display: none;
+        /* We will use a separate mobile menu container or toggle this */
+    }
+
+    /* Show hamburger */
+    .mobile-toggle {
+        display: flex;
+    }
+
+    /* Mobile Menu Overlay */
+    .mobile-menu {
+        position: fixed;
+        top: 5rem;
+        /* Below the nav pill */
+        left: 50%;
+        transform: translateX(-50%) translateY(-20px);
+        width: 90%;
+        max-width: 400px;
+        background: var(--surface);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 1.5rem;
+        flex-direction: column;
+        gap: 1rem;
+        display: none;
+        /* Hidden by default */
+        opacity: 0;
+        transition: all 0.3s var(--ease-out);
+        z-index: 999;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .mobile-menu.active {
+        display: flex;
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    .mobile-menu a {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-align: center;
+        padding: 0.75rem;
+        border-radius: 12px;
+        transition: background 0.2s;
+    }
+
+    .mobile-menu a:hover,
+    .mobile-menu a.active {
+        color: var(--text-main);
+        background: var(--surface-card);
+    }
+
+    /* Helper class to show desktop nav links in mobile menu if needed, 
+       but we will likely duplicate them in HTML for cleaner DOM manipulation 
+       or toggle the .nav-links class itself if simpler. 
+       Let's stick to a separate container in HTML for safety. */
+
+    /* Hero Responsive */
+    .hero h1 {
+        font-size: 3rem;
+        /* Smaller for mobile */
+    }
+
+    .hero p {
+        padding: 0 1rem;
+    }
+
+    /* Stack buttons */
+    .hero div[style*="flex"] {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Force Reset explicitly at the end to override any previous rules */
+    .col-span-2,
+    .row-span-2 {
+        grid-column: auto !important;
+        grid-row: auto !important;
+    }
 }
