@@ -4,17 +4,26 @@ const path = require('path');
 
 // --- Configuration ---
 const outDir = path.join(__dirname, '../assets/social');
-const BRAND_BLUE = '#3b82f6';
-const BRAND_BG = '#09090b';
 
-// SVG Paths (Extracted from assets/logos/variations/v1_gradient_bg.svg)
-// The background path is huge, but necessary for the specific shape.
-// Ideally we would just use a rectangle for social banners, but let's see if we can use the mark.
-// For the banner, we probably just want the Logo Mark (the "K" shape).
-// The "background" path in the source SVG is actually the container shape (rounded square).
-// We don't need that for a full-bleed banner. We just want the Mark.
+// --- Brand Constants ---
+const BRAND = {
+    colors: {
+        bg: '#09090b',         // Zinc 950
+        surface: '#18181b',    // Zinc 900
+        blue: '#3b82f6',       // Blue 500
+        blueDark: '#1d4ed8',   // Blue 700
+        blueLight: '#60A5FA',  // Blue 400
+        text: '#ffffff',
+        muted: '#94a3b8',      // Slate 400
+        border: 'rgba(255,255,255,0.1)'
+    },
+    fonts: {
+        main: "'Plus Jakarta Sans', 'Inter', sans-serif"
+    }
+};
 
-const LOGO_PATH = `M321.861450,294.630615 
+// SVG Paths
+const LOGO_Path = `M321.861450,294.630615 
 	C300.705872,276.401428 276.063171,267.350159 248.246887,266.491821 
 	C235.580963,266.100983 229.164062,272.061371 229.163071,284.599365 
 	C229.155685,378.587311 229.149551,472.575226 229.159164,566.563171 
@@ -67,130 +76,176 @@ const LOGO_PATH = `M321.861450,294.630615
 	C764.004272,701.663147 740.965942,677.619080 717.437927,653.065186 
 290: zz`;
 
-// --- Setup ---
-if (!fs.existsSync(outDir)) {
-    fs.mkdirSync(outDir, { recursive: true });
+// --- Helpers ---
+function createSVG({ filename, width, height, content }) {
+    const svg = `
+<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" xmlns="http://www.w3.org/2000/svg">
+    ${content}
+</svg>`;
+    
+    // Ensure dir exists
+    if (!fs.existsSync(outDir)) { fs.mkdirSync(outDir, { recursive: true }); }
+    
+    fs.writeFileSync(path.join(outDir, filename), svg.trim());
+    console.log(`Created ${filename}`);
 }
 
-// --- Helpers ---
+// --- Defs ---
+const DEFS = {
+    // Standard Blue Gradient
+    logoGrad: `
+        <linearGradient id="logo_grad" x1="220" y1="260" x2="800" y2="760" gradientUnits="userSpaceOnUse">
+            <stop stop-color="${BRAND.colors.blueLight}" />
+            <stop offset="1" stop-color="${BRAND.colors.blueDark}" />
+        </linearGradient>`,
+    
+    // Mesh Background
+    mesh: (width, height) => `
+        <radialGradient id="mesh" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(${width/2} ${height/2}) rotate(90) scale(${height} ${width})">
+            <stop stop-color="${BRAND.colors.blue}" stop-opacity="0.15"/>
+            <stop offset="1" stop-color="${BRAND.colors.bg}" stop-opacity="0"/>
+        </radialGradient>`
+};
 
-function generateBanner() {
-    // YouTube Banner: 2560 x 1440
-    // Safe Area (Desktop Minimum): 1546 x 423 (Centered)
+// --- Generators ---
+
+function generateBanners() {
     const width = 2560;
     const height = 1440;
     
-    // Logo Positioning (Left of center)
-    // Scale logo down to fit in safe area
-    // Original logo is 1024x1024
-    // We want it to be about 300px high
-    const scale = 0.35;
-    const logoSize = 1024 * scale; 
-    
-    // Center of screen
+    // Common Setup
     const cx = width / 2;
     const cy = height / 2;
+    const logoScale = 0.35;
+    const logoSize = 1024 * logoScale;
     
-    // Offset logo to the left
-    const logoX = cx - logoSize - 40; // 40px gap
-    const logoY = cy - (logoSize / 2); // Vertically centered
+    // V1: Minimal Dark (Logo Mark + Text)
+    // Left Logo, Right Text
+    createSVG({
+        filename: 'banner_v1_minimal.svg',
+        width, height,
+        content: `
+            <rect width="${width}" height="${height}" fill="${BRAND.colors.bg}"/>
+            <defs>${DEFS.logoGrad}</defs>
+            <g transform="translate(${cx - logoSize - 60}, ${cy - logoSize/2}) scale(${logoScale})">
+                 <path d="${LOGO_Path}" fill="url(#logo_grad)"/>
+            </g>
+            <text x="${cx + 60}" y="${cy + 20}" fill="white" font-family="${BRAND.fonts.main}" font-weight="bold" font-size="140" letter-spacing="-2">Kenichi</text>
+            <text x="${cx + 60}" y="${cy + 160}" fill="${BRAND.colors.muted}" font-family="${BRAND.fonts.main}" font-weight="500" font-size="60" letter-spacing="4">STUDIO</text>
+        `
+    });
 
-    // Text Positioning (Right of center)
-    const textX = cx + 40;
-    const textY = cy + 20; // Optical alignment
+    // V2: Mesh Gradient (Rich Background)
+    createSVG({
+        filename: 'banner_v2_mesh.svg',
+        width, height,
+        content: `
+            <rect width="${width}" height="${height}" fill="${BRAND.colors.bg}"/>
+            <defs>${DEFS.logoGrad} ${DEFS.mesh(width, height)}</defs>
+            <rect width="${width}" height="${height}" fill="url(#mesh)"/>
+            <g transform="translate(${cx - logoSize - 60}, ${cy - logoSize/2}) scale(${logoScale})">
+                 <path d="${LOGO_Path}" fill="url(#logo_grad)"/>
+            </g>
+            <text x="${cx + 60}" y="${cy + 20}" fill="white" font-family="${BRAND.fonts.main}" font-weight="bold" font-size="140" letter-spacing="-2">Kenichi</text>
+            <text x="${cx + 60}" y="${cy + 160}" fill="${BRAND.colors.muted}" font-family="${BRAND.fonts.main}" font-weight="500" font-size="60" letter-spacing="4">STUDIO</text>
+        `
+    });
 
-    const svg = `
-<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="${width}" height="${height}" fill="${BRAND_BG}"/>
-    
-    <!-- Background Mesh/Glow Effect -->
-    <defs>
-        <radialGradient id="mesh" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(${cx} ${cy}) rotate(90) scale(${height} ${width})">
-            <stop stop-color="${BRAND_BLUE}" stop-opacity="0.15"/>
-            <stop offset="1" stop-color="${BRAND_BG}" stop-opacity="0"/>
-        </radialGradient>
-        <linearGradient id="logo_grad" x1="220" y1="260" x2="800" y2="760" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#60A5FA" />
-            <stop offset="1" stop-color="#2563EB" />
-        </linearGradient>
-    </defs>
-    
-    <rect width="${width}" height="${height}" fill="url(#mesh)"/>
-
-    <!-- Safe Area Guide (Invisible in production, useful for debugging) 
-    <rect x="${(width - 1546)/2}" y="${(height - 423)/2}" width="1546" height="423" stroke="red" stroke-opacity="0.3" fill="none"/>
-    -->
-
-    <!-- Content Group (Centered) -->
-    <g transform="translate(0, 0)">
-        <!-- Logo -->
-        <g transform="translate(${logoX}, ${logoY}) scale(${scale})">
-             <path d="${LOGO_PATH}" fill="url(#logo_grad)"/>
-        </g>
-
-        <!-- Text -->
-        <text x="${textX}" y="${textY}" fill="white" font-family="'Plus Jakarta Sans', 'Inter', sans-serif" font-weight="bold" font-size="140" letter-spacing="-2">
-            Kenichi
-        </text>
-         <text x="${textX}" y="${textY + 140}" fill="#94a3b8" font-family="'Plus Jakarta Sans', 'Inter', sans-serif" font-weight="500" font-size="60" letter-spacing="4">
-            STUDIO
-        </text>
-    </g>
-</svg>`;
-
-    fs.writeFileSync(path.join(outDir, 'youtube_banner.svg'), svg.trim());
-    console.log('Created assets/social/youtube_banner.svg');
+    // V3: Studio Brand (Centered, Big Text)
+    createSVG({
+        filename: 'banner_v3_studio.svg',
+        width, height,
+        content: `
+            <rect width="${width}" height="${height}" fill="${BRAND.colors.bg}"/>
+            <defs>
+                <linearGradient id="text_grad" x1="0" y1="0" x2="0" y2="1">
+                    <stop stop-color="#fff" />
+                    <stop offset="1" stop-color="#94a3b8" />
+                </linearGradient>
+            </defs>
+            <text x="${cx}" y="${cy}" text-anchor="middle" fill="url(#text_grad)" font-family="${BRAND.fonts.main}" font-weight="800" font-size="300" letter-spacing="-10">KENICHI</text>
+            <text x="${cx}" y="${cy + 180}" text-anchor="middle" fill="${BRAND.colors.blue}" font-family="${BRAND.fonts.main}" font-weight="600" font-size="60" letter-spacing="10">DESIGN SYSTEM</text>
+        `
+    });
 }
 
-function generateThumbnail() {
-    // YouTube Thumbnail: 1280 x 720
+function generateThumbnails() {
     const width = 1280;
     const height = 720;
-    
     const cx = width / 2;
     const cy = height / 2;
-
-    // Single centered logo design for generic thumbnail
+    
+    // V1: Classic Glow (Centered Logo)
     const scale = 0.5;
     const logoSize = 1024 * scale;
-    const logoX = cx - (logoSize / 2);
-    const logoY = cy - (logoSize / 2);
+    createSVG({
+        filename: 'thumb_v1_glow.svg',
+        width, height,
+        content: `
+            <rect width="${width}" height="${height}" fill="${BRAND.colors.bg}"/>
+             <defs>
+                ${DEFS.logoGrad}
+                ${DEFS.mesh(width, height)}
+                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="25" result="blur"/>
+                    <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                </filter>
+            </defs>
+            <rect width="${width}" height="${height}" fill="url(#mesh)"/>
+            <g transform="translate(${cx - logoSize/2}, ${cy - logoSize/2}) scale(${scale})">
+                <path d="${LOGO_Path}" fill="url(#logo_grad)" filter="url(#glow)"/>
+                <path d="${LOGO_Path}" fill="url(#logo_grad)"/> 
+            </g>
+        `
+    });
 
-    const svg = `
-<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="${width}" height="${height}" fill="${BRAND_BG}"/>
+    // V2: Split Layout (Left Image/Logo, Right Content)
+    createSVG({
+        filename: 'thumb_v2_split.svg',
+        width, height,
+        content: `
+            <rect width="${width}" height="${height}" fill="${BRAND.colors.bg}"/>
+            <defs>${DEFS.logoGrad}</defs>
+            
+            <!-- Left Side (Visual) -->
+            <rect width="${width/2}" height="${height}" fill="${BRAND.colors.surface}"/>
+            <g transform="translate(${width/4 - (1024*0.4)/2}, ${cy - (1024*0.4)/2}) scale(0.4)">
+                 <path d="${LOGO_Path}" fill="url(#logo_grad)"/>
+            </g>
+            
+            <!-- Right Side (Text Placeholder) -->
+            <text x="${width/2 + 60}" y="${cy}" fill="white" font-family="${BRAND.fonts.main}" font-weight="bold" font-size="80">Update v2.0</text>
+            <text x="${width/2 + 60}" y="${cy + 60}" fill="${BRAND.colors.muted}" font-family="${BRAND.fonts.main}" font-size="40">New Features & UI</text>
+        `
+    });
     
-    <defs>
-        <radialGradient id="mesh_thumb" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(${cx} ${cy}) rotate(90) scale(${height} ${width})">
-            <stop stop-color="${BRAND_BLUE}" stop-opacity="0.2"/>
-            <stop offset="1" stop-color="${BRAND_BG}" stop-opacity="0"/>
-        </radialGradient>
-        <linearGradient id="logo_grad" x1="220" y1="260" x2="800" y2="760" gradientUnits="userSpaceOnUse">
-             <stop stop-color="#60A5FA" />
-            <stop offset="1" stop-color="#2563EB" />
-        </linearGradient>
-    </defs>
-    
-    <rect width="${width}" height="${height}" fill="url(#mesh_thumb)"/>
-
-    <!-- Logo -->
-    <g transform="translate(${logoX}, ${logoY}) scale(${scale})">
-        <path d="${LOGO_PATH}" fill="url(#logo_grad)"/>
-        <!-- Drop Shadow -->
-        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="20" result="blur"/>
-            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-        </filter>
-    </g>
-
-     <!-- Text Overlay (Optional title placeholder) -->
-     <rect x="0" y="${height - 120}" width="${width}" height="120" fill="linear-gradient(to top, rgba(0,0,0,0.8), transparent)" opacity="0.5"/>
-</svg>`;
-
-    fs.writeFileSync(path.join(outDir, 'youtube_thumbnail.svg'), svg.trim());
-    console.log('Created assets/social/youtube_thumbnail.svg');
+    // V3: Dev Diary (Code Theme)
+    createSVG({
+        filename: 'thumb_v3_dev_diary.svg',
+        width, height,
+        content: `
+            <rect width="${width}" height="${height}" fill="${BRAND.colors.bg}"/>
+            <!-- Code Background Pattern -->
+            <text x="40" y="60" fill="${BRAND.colors.surface}" font-family="monospace" font-size="24" opacity="0.5">
+                const update = () => { build(new_features); }
+            </text>
+             <text x="40" y="100" fill="${BRAND.colors.surface}" font-family="monospace" font-size="24" opacity="0.5">
+                // TODO: Refactor legacy systems
+            </text>
+            
+            <!-- Badge -->
+            <rect x="0" y="100" width="400" height="120" fill="${BRAND.colors.blue}" />
+            <text x="40" y="180" fill="white" font-family="${BRAND.fonts.main}" font-weight="bold" font-size="60">DEVLOG</text>
+            
+            <!-- Title -->
+            <text x="40" y="${height - 180}" fill="white" font-family="${BRAND.fonts.main}" font-weight="800" font-size="90">Building the</text>
+            <text x="40" y="${height - 80}" fill="${BRAND.colors.blueLight}" font-family="${BRAND.fonts.main}" font-weight="800" font-size="90">New Engine</text>
+        `
+    });
 }
 
 // --- Run ---
-generateBanner();
-generateThumbnail();
+console.log('Generating Social Assets...');
+generateBanners();
+generateThumbnails();
+console.log('Done.');
