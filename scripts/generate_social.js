@@ -242,6 +242,43 @@ function generateThumbnails() {
             <text x="40" y="${height - 80}" fill="${BRAND.colors.blueLight}" font-family="${BRAND.fonts.main}" font-weight="800" font-size="90">New Engine</text>
         `
     });
+
+    // V4: Fireship Style (High Contrast / Void)
+    createSVG({
+        filename: 'thumb_v4_fireship.svg',
+        width, height,
+        content: `
+            <!-- Void Background -->
+            <rect width="${width}" height="${height}" fill="#050505"/>
+            
+            <!-- Shadow/Glow Definition -->
+            <defs>
+                ${DEFS.logoGrad}
+                <filter id="hardShadow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feDropShadow dx="0" dy="15" stdDeviation="20" flood-color="#000" flood-opacity="1"/>
+                </filter>
+                 <filter id="textGlow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feDropShadow dx="0" dy="0" stdDeviation="15" flood-color="${BRAND.colors.blue}" flood-opacity="0.6"/>
+                </filter>
+            </defs>
+
+            <!-- Big Left Logo (Reaction/Topic) -->
+             <g transform="translate(140, 160) scale(0.6)">
+                <path d="${LOGO_Path}" fill="url(#logo_grad)" filter="url(#hardShadow)"/>
+            </g>
+
+            <!-- Huge Hype Text -->
+            <text x="${width - 100}" y="${height/2 - 20}" text-anchor="end" fill="white" font-family="Rubik, 'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="220" transform="rotate(-3, ${width/2}, ${height/2})">
+                VOID
+            </text>
+             <text x="${width - 100}" y="${height/2 + 200}" text-anchor="end" fill="#ef4444" font-family="Rubik, 'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="220" transform="rotate(-2, ${width/2}, ${height/2})" filter="url(#hardShadow)">
+                MODE
+            </text>
+            
+            <!-- Rim Light Effect (Subtle Top) -->
+            <rect width="${width}" height="10" fill="${BRAND.colors.blue}" opacity="0.8" />
+        `
+    });
 }
 
 // --- Run ---
