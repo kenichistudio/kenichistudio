@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thumbnail Maker | Kenichi Tools</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/logos/variations/v1_gradient_bg.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../pages/style.css">
+    <link rel="stylesheet" href="./tool.css">
+</head>
+<body>
+    <nav class="nav-pill">
+        <a href="./index.html" class="nav-brand">Tools.</a>
+        <div class="nav-links">
+            <a href="../index.html">Home</a>
+             <a href="./index.html">All Tools</a>
+            <a href="#" class="active">Thumbnail Lab</a>
+        </div>
+        <button class="theme-btn" id="theme-toggle" aria-label="Toggle Theme">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+    </nav>
+
+    <div class="bg-mesh"></div>
+
+    <main class="container" style="padding-top: 6rem;">
+        
+        <div class="tool-container">
+            
+            <aside class="tool-sidebar">
+                <h3>Settings</h3>
+                
+                <div class="control-group">
+                    <label>Template Style</label>
+                    <select id="styleSelect">
+                        <option value="minimal">Kenichi Minimal</option>
+                        <option value="glow">Neon Glow</option>
+                        <option value="split">Split Layout</option>
+                         <option value="fireship">Fireship Style</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Title</label>
+                    <input type="text" id="mainTitle" value="Building the Future">
+                </div>
+
+                <div class="control-group">
+                    <label>Subtitle / Tag</label>
+                    <input type="text" id="subTitle" value="Devlog #01">
+                </div>
+
+                <div class="control-group">
+                    <label>Background Image</label>
+                    <input type="file" id="bgInput" accept="image/*">
+                </div>
+
+                <div class="control-group">
+                    <label>Accent Color</label>
+                    <input type="color" id="accentColor" value="#3b82f6">
+                </div>
+
+                <button class="btn btn-primary" id="downloadBtn">Download JPG</button>
+            </aside>
+
+            <div class="tool-main">
+                <canvas id="thumbCanvas" width="1280" height="720" style="width: 100%; max-width: 800px; height: auto; border: 1px solid #333;"></canvas>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { downloadCanvas, readFileAsDataURL, loadImage } from './utils.js';
+
+        const canvas = document.getElementById('thumbCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Assets
+        let bgImage = null;
+        let logoImage = null; // Could load default Kenichi Logo
+
+        // State
+        const state = {
+            style: 'minimal',
+            title: 'Building the Future',
+            subtitle: 'Devlog #01',
+            accent: '#3b82f6'
+        };
+
+        // Load Default Logo
+        loadImage('../assets/logos/variations/v1_gradient_bg.svg').then(img => {
+            logoImage = img;
+            draw();
+        }).catch(e => console.warn('Default logo not found'));
+
+        function draw() {
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Clear
+            ctx.clearRect(0, 0, w, h);
+
+            // 1. Background
+            ctx.fillStyle = '#09090b';
+            ctx.fillRect(0, 0, w, h);
+
+            if (bgImage) {
+                // Cover fit
+                const ratio = Math.max(w / bgImage.width, h / bgImage.height);
+                const centerShift_x = (w - bgImage.width * ratio) / 2;
+                const centerShift_y = (h - bgImage.height * ratio) / 2;
+                ctx.globalAlpha = 0.4; // Dim background
+                ctx.drawImage(bgImage, 0, 0, bgImage.width, bgImage.height, centerShift_x, centerShift_y, bgImage.width * ratio, bgImage.height * ratio);
+                ctx.globalAlpha = 1.0;
+            }
+
+            // 2. Styles
+            if (state.style === 'minimal') {
+                // Gradient overlay
+                const grad = ctx.createLinearGradient(0, 0, w, h);
+                grad.addColorStop(0, 'rgba(9,9,11,0.8)');
+                grad.addColorStop(1, 'rgba(9,9,11,0.2)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, w, h);
+
+                // Text
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 80px "Plus Jakarta Sans", sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(state.title, 80, h - 180);
+
+                ctx.fillStyle = state.accent;
+                ctx.font = '600 40px "Inter", sans-serif';
+                ctx.fillText(state.subtitle.toUpperCase(), 80, h - 120);
+
+                // Logo Top Right
+                if (logoImage) ctx.drawImage(logoImage, w - 150, 50, 100, 100);
+
+            } else if (state.style === 'glow') {
+                 // Centered Glow
+                 const rad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, w/1.5);
+                 rad.addColorStop(0, state.accent + '66'); // 40% opacity
+                 rad.addColorStop(1, 'transparent');
+                 ctx.fillStyle = rad;
+                 ctx.fillRect(0, 0, w, h);
+
+                 ctx.fillStyle = '#ffffff';
+                 ctx.font = 'bold 100px "Plus Jakarta Sans", sans-serif';
+                 ctx.textAlign = 'center';
+                 
+                 // Text Outline
+                 ctx.strokeStyle = state.accent;
+                 ctx.lineWidth = 4;
+                 ctx.strokeText(state.title, w/2, h/2);
+                 ctx.fillText(state.title, w/2, h/2);
+                 
+                 ctx.font = '500 40px "Inter", sans-serif';
+                 ctx.fillStyle = '#ccc';
+                 ctx.fillText(state.subtitle, w/2, h/2 + 80);
+
+            } else if (state.style === 'split') {
+                 // Split BG
+                 ctx.fillStyle = state.accent;
+                 ctx.fillRect(0, 0, w * 0.4, h);
+                 
+                 // Text on Left
+                 ctx.fillStyle = '#ffffff'; // Or optimal contrast color
+                 ctx.font = 'bold 70px "Plus Jakarta Sans", sans-serif';
+                 ctx.textAlign = 'left';
+                 wrapText(ctx, state.title, 50, h/2 - 50, w*0.35, 80);
+
+                 // Subtitle
+                 ctx.fillStyle = 'rgba(255,255,255,0.8)';
+                 ctx.font = '500 30px "Inter", sans-serif';
+                 ctx.fillText(state.subtitle, 50, h - 50);
+
+                 // Logo floating
+                 if (logoImage) ctx.drawImage(logoImage, w - 200, h - 200, 150, 150);
+
+            } else if (state.style === 'fireship') {
+                 // High Contrast
+                 ctx.fillStyle = 'black';
+                 ctx.fillRect(0, 0, w, h);
+
+                 if (logoImage) {
+                     // Center Big Logo
+                     ctx.drawImage(logoImage, w/2 - 200, h/2 - 200, 400, 400);
+                 }
+                 
+                 // Text Bottom
+                 ctx.fillStyle = state.accent; // Green usually
+                 ctx.font = 'bold 120px "Plus Jakarta Sans", sans-serif';
+                 ctx.textAlign = 'center';
+                 ctx.shadowColor = state.accent;
+                 ctx.shadowBlur = 20;
+                 ctx.fillText(state.title, w/2, h - 50);
+                 ctx.shadowBlur = 0;
+            }
+        }
+
+        // Helper for text wrapping
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            for(let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = context.measureText(testLine);
+                const testWidth = metrics.width;
+                if (testWidth > maxWidth && n > 0) {
+                    context.fillText(line, x, y);
+                    line = words[n] + ' ';
+                    y += lineHeight;
+                } else {
+                    line = testLine;
+                }
+            }
+            context.fillText(line, x, y);
+        }
+
+        // Listeners
+        document.getElementById('styleSelect').addEventListener('change', e => { state.style = e.target.value; draw(); });
+        document.getElementById('mainTitle').addEventListener('input', e => { state.title = e.target.value; draw(); });
+        document.getElementById('subTitle').addEventListener('input', e => { state.subtitle = e.target.value; draw(); });
+        document.getElementById('accentColor').addEventListener('input', e => { state.accent = e.target.value; draw(); });
+        
+        document.getElementById('bgInput').addEventListener('change', e => {
+            if (e.target.files.length) {
+                readFileAsDataURL(e.target.files[0]).then(url => loadImage(url)).then(img => {
+                    bgImage = img;
+                    draw();
+                });
+            }
+        });
+
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            downloadCanvas(canvas, 'thumbnail.jpg');
+        });
+
+         // Theme toggle logic (Global)
+        const btn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        btn.addEventListener('click', () => {
+             const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+             html.setAttribute('data-theme', next);
+             localStorage.setItem('theme', next);
+        });
+        html.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
+        
+        draw();
+    </script>
+</body>
+</html>

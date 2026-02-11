@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Editor | Kenichi Tools</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/logos/variations/v1_gradient_bg.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../pages/style.css">
+    <link rel="stylesheet" href="./tool.css">
+</head>
+<body>
+    <nav class="nav-pill">
+        <a href="./index.html" class="nav-brand">Tools.</a>
+        <div class="nav-links">
+            <a href="../index.html">Home</a>
+             <a href="./index.html">All Tools</a>
+            <a href="#" class="active">Editor</a>
+        </div>
+        <button class="theme-btn" id="theme-toggle" aria-label="Toggle Theme">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+    </nav>
+
+    <div class="bg-mesh"></div>
+
+    <main class="container" style="padding-top: 6rem;">
+        
+        <div class="tool-container">
+            
+            <aside class="tool-sidebar">
+                <h3>Adjustments</h3>
+                
+                <div class="control-group">
+                    <label>Brightness</label>
+                    <input type="range" id="brightness" min="0" max="200" value="100">
+                </div>
+                <div class="control-group">
+                    <label>Contrast</label>
+                    <input type="range" id="contrast" min="0" max="200" value="100">
+                </div>
+                <div class="control-group">
+                    <label>Invert</label>
+                    <input type="range" id="invert" min="0" max="100" value="0">
+                </div>
+                <div class="control-group">
+                    <label>Blur</label>
+                    <input type="range" id="blur" min="0" max="20" value="0">
+                </div>
+                <div class="control-group">
+                    <label>Saturate</label>
+                    <input type="range" id="saturate" min="0" max="200" value="100">
+                </div>
+
+                <div class="control-group">
+                     <label>Presets</label>
+                     <div class="btn-group">
+                         <button class="btn-icon" onclick="applyPreset('bw')">B&W</button>
+                         <button class="btn-icon" onclick="applyPreset('vintage')">Vintage</button>
+                         <button class="btn-icon" onclick="applyPreset('reset')">Reset</button>
+                     </div>
+                </div>
+
+                <button class="btn btn-primary" id="saveBtn">Save Image</button>
+            </aside>
+
+            <div class="tool-main" style="flex-direction: column; justify-content: flex-start; padding: 2rem; gap: 2rem;">
+                 
+                <!-- Drop Zone -->
+                <div class="drop-zone" id="dropZone">
+                    <p>Drag & Drop to Edit</p>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                </div>
+
+                <!-- Canvas Wrapper -->
+                <div id="canvasWrapper" style="display: none; max-width: 100%; overflow: hidden; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
+                    <canvas id="editCanvas"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { readFileAsDataURL, loadImage, downloadCanvas } from './utils.js';
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const canvas = document.getElementById('editCanvas');
+        const ctx = canvas.getContext('2d');
+        const wrapper = document.getElementById('canvasWrapper');
+
+        let originalImage = null;
+
+        // Filters State
+        const filters = {
+            brightness: 100,
+            contrast: 100,
+            invert: 0,
+            blur: 0,
+            saturate: 100
+        };
+
+        // Inputs
+        const inputs = {
+            brightness: document.getElementById('brightness'),
+            contrast: document.getElementById('contrast'),
+            invert: document.getElementById('invert'),
+            blur: document.getElementById('blur'),
+            saturate: document.getElementById('saturate')
+        };
+
+        // Events
+        Object.keys(inputs).forEach(key => {
+            inputs[key].addEventListener('input', (e) => {
+                filters[key] = e.target.value;
+                applyFilters();
+            });
+        });
+
+        // Drop
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) loadFile(e.target.files[0]);
+        });
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            if (e.dataTransfer.files.length) loadFile(e.dataTransfer.files[0]);
+        });
+
+        function loadFile(file) {
+            readFileAsDataURL(file).then(url => loadImage(url)).then(img => {
+                originalImage = img;
+                
+                // Resize canvas to fit image but constrained max width in draw
+                // Ideally we keep full resolution on canvas but scale it in CSS
+                canvas.width = img.width;
+                canvas.height = img.height;
+                
+                // Show
+                dropZone.style.display = 'none';
+                wrapper.style.display = 'block';
+                
+                applyFilters();
+            });
+        }
+
+        function applyFilters() {
+            if (!originalImage) return;
+
+            // Construct Filter String
+            const filterStr = `brightness(${filters.brightness}%) contrast(${filters.contrast}%) invert(${filters.invert}%) blur(${filters.blur}px) saturate(${filters.saturate}%)`;
+            
+            ctx.filter = filterStr;
+            ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+        }
+
+        window.applyPreset = (name) => {
+            if (name === 'bw') {
+                inputs.saturate.value = 0;
+                inputs.contrast.value = 120;
+            } else if (name === 'vintage') {
+                inputs.saturate.value = 60;
+                inputs.brightness.value = 110;
+                inputs.contrast.value = 90;
+                inputs.blur.value = 0; // Maybe slight blur
+                // Sepia is not in my list but easy to add. 
+                // Let's stick to simple controls for now.
+            } else if (name === 'reset') {
+                 inputs.brightness.value = 100;
+                 inputs.contrast.value = 100;
+                 inputs.invert.value = 0;
+                 inputs.blur.value = 0;
+                 inputs.saturate.value = 100;
+            }
+            
+            // Trigger events
+            Object.keys(inputs).forEach(k => inputs[k].dispatchEvent(new Event('input')));
+        };
+
+        document.getElementById('saveBtn').addEventListener('click', () => {
+            downloadCanvas(canvas, 'edited-image.jpg');
+        });
+
+         // Theme toggle logic (Global)
+        const btn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        btn.addEventListener('click', () => {
+             const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+             html.setAttribute('data-theme', next);
+             localStorage.setItem('theme', next);
+        });
+        html.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
+
+    </script>
+</body>
+</html>

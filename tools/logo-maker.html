@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo Maker | Kenichi Tools</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/logos/variations/v1_gradient_bg.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../pages/style.css">
+    <link rel="stylesheet" href="./tool.css">
+</head>
+<body>
+    <nav class="nav-pill">
+        <a href="./index.html" class="nav-brand">Tools.</a>
+        <div class="nav-links">
+            <a href="../index.html">Home</a>
+             <a href="./index.html">All Tools</a>
+            <a href="#" class="active">Logo Maker</a>
+        </div>
+        <button class="theme-btn" id="theme-toggle" aria-label="Toggle Theme">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+    </nav>
+
+    <div class="bg-mesh"></div>
+
+    <main class="container" style="padding-top: 6rem;">
+        
+        <div class="tool-container">
+            
+            <!-- Sidebar -->
+            <aside class="tool-sidebar">
+                <h3 style="margin-bottom: 0;">Logo Properties</h3>
+                
+                <div class="control-group">
+                    <label>Text</label>
+                    <input type="text" id="logoText" placeholder="Brand Name" value="Kenichi">
+                </div>
+
+                <div class="control-group">
+                    <label>Font Size</label>
+                    <input type="range" id="fontSize" min="20" max="200" value="80">
+                </div>
+
+                <div class="control-group">
+                    <label>Font Family</label>
+                    <select id="fontFamily">
+                        <option value="'Plus Jakarta Sans', sans-serif">Plus Jakarta Sans</option>
+                        <option value="'Inter', sans-serif">Inter</option>
+                        <option value="serif">Serif</option>
+                        <option value="monospace">Monospace</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Color</label>
+                    <input type="color" id="textColor" value="#ffffff">
+                </div>
+                
+                 <div class="control-group">
+                    <label>Background</label>
+                    <input type="color" id="bgColor" value="#000000">
+                     <label style="font-size: 0.8rem; font-weight: normal; margin-top: 0.5rem;"><input type="checkbox" id="transparentBg" checked> Transparent</label>
+                </div>
+
+                <div class="control-group">
+                    <label>Icon</label>
+                    <select id="iconSelect">
+                        <option value="none">None</option>
+                        <option value="circle">Circle</option>
+                        <option value="square">Square</option>
+                        <option value="triangle">Triangle</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" id="downloadBtn">Download PNG</button>
+            </aside>
+
+            <!-- Main Canvas -->
+            <div class="tool-main">
+                <canvas id="logoCanvas" width="800" height="800" style="width: 500px; height: 500px;"></canvas>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { downloadCanvas } from './utils.js';
+
+        const canvas = document.getElementById('logoCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // State
+        const state = {
+            text: 'Kenichi',
+            fontSize: 80,
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            color: '#ffffff',
+            bgColor: '#000000',
+            transparent: true,
+            icon: 'none'
+        };
+
+        // Render
+        function draw() {
+            // Clear
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Background
+            if (!state.transparent) {
+                ctx.fillStyle = state.bgColor;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // Icon (Simple Shapes for now)
+            if (state.icon !== 'none') {
+                 ctx.fillStyle = state.color;
+                 if (state.icon === 'circle') {
+                     ctx.beginPath();
+                     ctx.arc(canvas.width/2, canvas.height/2 - 100, 50, 0, Math.PI * 2);
+                     ctx.fill();
+                 } else if (state.icon === 'square') {
+                     ctx.fillRect(canvas.width/2 - 50, canvas.height/2 - 150, 100, 100);
+                 } else if (state.icon === 'triangle') {
+                     ctx.beginPath();
+                     ctx.moveTo(canvas.width/2, canvas.height/2 - 150);
+                     ctx.lineTo(canvas.width/2 + 50, canvas.height/2 - 50);
+                     ctx.lineTo(canvas.width/2 - 50, canvas.height/2 - 50);
+                     ctx.fill();
+                 }
+            }
+
+            // Text
+            ctx.fillStyle = state.color;
+            ctx.font = `bold ${state.fontSize}px ${state.fontFamily.replace(/'/g, "")}`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Adjust text pos based on icon
+            const yOffset = state.icon === 'none' ? 0 : 80;
+            ctx.fillText(state.text, canvas.width/2, canvas.height/2 + yOffset);
+        }
+
+        // Listeners
+        document.getElementById('logoText').addEventListener('input', e => { state.text = e.target.value; draw(); });
+        document.getElementById('fontSize').addEventListener('input', e => { state.fontSize = parseInt(e.target.value); draw(); });
+        document.getElementById('fontFamily').addEventListener('change', e => { state.fontFamily = e.target.value; draw(); });
+        document.getElementById('textColor').addEventListener('input', e => { state.color = e.target.value; draw(); });
+        document.getElementById('bgColor').addEventListener('input', e => { state.bgColor = e.target.value; if(!state.transparent) draw(); });
+        document.getElementById('transparentBg').addEventListener('change', e => { state.transparent = e.target.checked; draw(); });
+        document.getElementById('iconSelect').addEventListener('change', e => { state.icon = e.target.value; draw(); });
+
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            downloadCanvas(canvas, `logo-${state.text.toLowerCase()}.png`);
+        });
+
+        // Init
+        // Handle Theme for initial color
+        if (localStorage.getItem('theme') === 'light') {
+            state.color = '#000000';
+            document.getElementById('textColor').value = '#000000';
+        }
+        draw();
+        
+        // Theme toggle logic (Global)
+        const btn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        btn.addEventListener('click', () => {
+             const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+             html.setAttribute('data-theme', next);
+             localStorage.setItem('theme', next);
+             // Update canvas color if it matches old theme defaults? 
+             // Ideally we let user decide, but initial load respects theme.
+        });
+        html.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
+
+    </script>
+</body>
+</html>

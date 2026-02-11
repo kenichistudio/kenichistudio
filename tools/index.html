@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kenichi Tools | Asset Maker Suite</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/logos/variations/v1_gradient_bg.svg">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../pages/style.css">
+    <link rel="stylesheet" href="./tool.css">
+</head>
+<body>
+
+    <nav class="nav-pill">
+        <a href="../index.html" class="nav-brand">Kenichi.</a>
+        <div class="nav-links">
+            <a href="../index.html">Home</a>
+            <a href="#" class="active">Tools</a>
+            <a href="../pages/download.html">Downloads</a>
+        </div>
+        <button class="theme-btn" id="theme-toggle" aria-label="Toggle Theme">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="5" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </nav>
+
+    <div class="bg-mesh"></div>
+
+    <main class="container">
+        
+        <section class="hero hero-min">
+            <h1>Create <span class="gradient-text">Anything.</span></h1>
+            <p>Your browser-based studio for rapid asset generation.</p>
+        </section>
+
+        <section class="bento-section reveal">
+            <div class="bento-grid">
+                
+                <!-- 1. Logo Maker -->
+                <div class="card col-span-2 row-span-2" onclick="location.href='./logo-maker.html'" style="cursor: pointer;">
+                    <div class="card-content">
+                        <h3>Logo Maker</h3>
+                        <p>Design SVG logos with custom typography and shapes.</p>
+                    </div>
+                    <div class="card-visual">
+                         <h1 style="font-size: 5rem; line-height: 1; background: linear-gradient(135deg, #fff 0%, #aaa 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Aa</h1>
+                    </div>
+                </div>
+
+                <!-- 2. Image Converter -->
+                <div class="card" onclick="location.href='./converter.html'" style="cursor: pointer;">
+                    <div class="card-content">
+                        <h3>Converter</h3>
+                        <p>Batch convert Raster images.</p>
+                    </div>
+                    <div class="card-visual">
+                        <code style="color: var(--accent);">.png .jpg .webp</code>
+                    </div>
+                </div>
+
+                <!-- 3. PNG to SVG -->
+                <div class="card" onclick="location.href='./png-to-svg.html'" style="cursor: pointer;">
+                    <div class="card-content">
+                        <h3>Vectorize</h3>
+                        <p>Trace Bitmaps to SVG.</p>
+                    </div>
+                    <div class="card-visual">
+                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg>
+                    </div>
+                </div>
+
+                <!-- 4. Thumbnail Maker -->
+                <div class="card col-span-2" onclick="location.href='./thumbnail-maker.html'" style="cursor: pointer;">
+                    <div class="card-content">
+                        <h3>Thumbnail Lab</h3>
+                        <p>Generate social assets (YouTube, Twitter) with preset Kenichi themes.</p>
+                    </div>
+                    <div class="card-visual" style="justify-content: center; gap: 10px;">
+                        <div style="width: 80px; height: 45px; background: #333; border-radius: 4px;"></div>
+                        <div style="width: 80px; height: 45px; background: var(--accent); border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <!-- 5. Editor -->
+                <div class="card col-span-2" onclick="location.href='./image-editor.html'" style="cursor: pointer;">
+                    <div class="card-content">
+                        <h3>Image Editor</h3>
+                        <p>Quick crop, resize, and filter adjustments.</p>
+                    </div>
+                    <div class="card-visual">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Use the same theme toggle logic as main site
+        const btn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        btn.addEventListener('click', () => {
+            const current = html.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        });
+
+        const saved = localStorage.getItem('theme') || 'dark';
+        html.setAttribute('data-theme', saved);
+
+        // Scroll Reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

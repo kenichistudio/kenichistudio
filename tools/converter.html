@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Converter | Kenichi Tools</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/logos/variations/v1_gradient_bg.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../pages/style.css">
+    <link rel="stylesheet" href="./tool.css">
+</head>
+<body>
+    <nav class="nav-pill">
+        <a href="./index.html" class="nav-brand">Tools.</a>
+        <div class="nav-links">
+            <a href="../index.html">Home</a>
+             <a href="./index.html">All Tools</a>
+            <a href="#" class="active">Converter</a>
+        </div>
+        <button class="theme-btn" id="theme-toggle" aria-label="Toggle Theme">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+    </nav>
+
+    <div class="bg-mesh"></div>
+
+    <main class="container" style="padding-top: 6rem;">
+        
+        <div class="tool-container">
+            
+            <aside class="tool-sidebar">
+                <h3>Settings</h3>
+                
+                <div class="control-group">
+                    <label>Output Format</label>
+                    <select id="formatSelect">
+                        <option value="image/png">PNG</option>
+                        <option value="image/jpeg">JPEG</option>
+                        <option value="image/webp">WebP</option>
+                    </select>
+                </div>
+
+                <div class="control-group" id="qualityGroup" style="display:none;">
+                    <label>Quality (0-1)</label>
+                    <input type="range" id="quality" min="0.1" max="1" step="0.1" value="0.9">
+                </div>
+
+                <div class="control-group">
+                    <label>Scale</label>
+                     <input type="range" id="scale" min="0.1" max="2" step="0.1" value="1">
+                     <span id="scaleVal" style="font-size: 0.8rem; color: var(--text-muted); text-align: right;">1x</span>
+                </div>
+
+                <button class="btn btn-primary" id="convertBtn" disabled>Convert & Download</button>
+            </aside>
+
+            <div class="tool-main" style="flex-direction: column; justify-content: flex-start; padding: 2rem; gap: 2rem;">
+                
+                <!-- Drop Zone -->
+                <div class="drop-zone" id="dropZone">
+                    <p>Drag & Drop an Image here<br><span style="font-size: 0.9rem; opacity: 0.7;">or click to upload</span></p>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                </div>
+
+                <!-- Preview Area -->
+                <div id="previewArea" style="display: none; width: 100%; text-align: center;">
+                    <img id="previewImg" style="max-width: 100%; max-height: 400px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    <p id="fileInfo" style="margin-top: 1rem; color: var(--text-muted);"></p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { readFileAsDataURL } from './utils.js';
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const previewImg = document.getElementById('previewImg');
+        const previewArea = document.getElementById('previewArea');
+        const fileInfo = document.getElementById('fileInfo');
+        const convertBtn = document.getElementById('convertBtn');
+        const formatSelect = document.getElementById('formatSelect');
+        const qualityInput = document.getElementById('quality');
+        const scaleInput = document.getElementById('scale');
+
+        let currentFile = null;
+
+        // UI Logic
+        formatSelect.addEventListener('change', () => {
+            const fmt = formatSelect.value;
+            document.getElementById('qualityGroup').style.display = (fmt === 'image/jpeg' || fmt === 'image/webp') ? 'flex' : 'none';
+        });
+
+        scaleInput.addEventListener('input', (e) => {
+            document.getElementById('scaleVal').textContent = e.target.value + 'x';
+        });
+
+        // Drop Zone
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+        });
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) handleFile(e.target.files[0]);
+        });
+
+        function handleFile(file) {
+            currentFile = file;
+            readFileAsDataURL(file).then(url => {
+                previewImg.src = url;
+                previewArea.style.display = 'block';
+                dropZone.style.display = 'none'; // Hide drop zone or show smaller
+                convertBtn.disabled = false;
+                fileInfo.textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+            });
+        }
+
+        // Conversion Logic
+        convertBtn.addEventListener('click', () => {
+            if (!currentFile) return;
+            
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const scale = parseFloat(scaleInput.value);
+                canvas.width = img.width * scale;
+                canvas.height = img.height * scale;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                const fmt = formatSelect.value;
+                const q = parseFloat(qualityInput.value);
+                const dataUrl = canvas.toDataURL(fmt, q);
+                
+                const link = document.createElement('a');
+                link.download = `converted-${currentFile.name.split('.')[0]}.${fmt.split('/')[1]}`;
+                link.href = dataUrl;
+                link.click();
+            };
+            img.src = previewImg.src;
+        });
+
+         // Theme toggle logic (Global)
+        const btn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        btn.addEventListener('click', () => {
+             const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+             html.setAttribute('data-theme', next);
+             localStorage.setItem('theme', next);
+        });
+        html.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
+
+    </script>
+</body>
+</html>

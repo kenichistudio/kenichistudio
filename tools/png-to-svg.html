@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Vectorizer | Kenichi Tools</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/logos/variations/v1_gradient_bg.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../pages/style.css">
+    <link rel="stylesheet" href="./tool.css">
+</head>
+<body>
+    <nav class="nav-pill">
+        <a href="./index.html" class="nav-brand">Tools.</a>
+        <div class="nav-links">
+            <a href="../index.html">Home</a>
+             <a href="./index.html">All Tools</a>
+            <a href="#" class="active">Vectorizer</a>
+        </div>
+        <button class="theme-btn" id="theme-toggle" aria-label="Toggle Theme">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+    </nav>
+
+    <div class="bg-mesh"></div>
+
+    <main class="container" style="padding-top: 6rem;">
+        
+        <div class="tool-container">
+            
+            <aside class="tool-sidebar">
+                <h3>Settings</h3>
+                
+                <div class="control-group">
+                    <label>Pixel Size</label>
+                    <input type="range" id="pixelSize" min="2" max="20" value="10">
+                    <span id="pixelVal" style="font-size: 0.8rem; color: var(--text-muted); text-align: right;">10px</span>
+                </div>
+
+                <div class="control-group">
+                     <label>Simplify Colors</label>
+                     <input type="checkbox" id="simplify" checked>
+                </div>
+
+                <button class="btn btn-primary" id="processBtn" disabled>Process & Download SVG</button>
+                
+                <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+                    <strong>Note:</strong> This tool converts images into SVG pixel art. For smooth vector tracing, please use the CLI tool `image_tools.js` with `imagetracerjs`.
+                </p>
+            </aside>
+
+            <div class="tool-main" style="flex-direction: column; justify-content: flex-start; padding: 2rem; gap: 2rem;">
+                 
+                <!-- Drop Zone -->
+                <div class="drop-zone" id="dropZone">
+                     <div style="margin-bottom: 1rem; color: var(--accent);">
+                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                             <polyline points="17 8 12 3 7 8"></polyline>
+                             <line x1="12" y1="3" x2="12" y2="15"></line>
+                         </svg>
+                     </div>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Drag & Drop Image</h3>
+                    <p style="font-size: 0.9rem; opacity: 0.7;">or click to browse files</p>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                </div>
+
+                <!-- Preview Area -->
+                <div id="previewArea" style="display: none; width: 100%; text-align: center;">
+                    <h4>Original</h4>
+                    <img id="previewImg" style="max-width: 100%; max-height: 200px; margin-bottom: 2rem; border-radius: 8px;">
+                    
+                    <h4>SVG Preview</h4>
+                    <div id="svgContainer" style="border: 1px dashed var(--border); padding: 1rem; border-radius: 12px; background: var(--bg);"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { readFileAsDataURL, loadImage } from './utils.js';
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const previewImg = document.getElementById('previewImg');
+        const svgContainer = document.getElementById('svgContainer');
+        const processBtn = document.getElementById('processBtn');
+        const pixelInput = document.getElementById('pixelSize');
+        const simplifyCheck = document.getElementById('simplify');
+
+        let originalImage = null;
+
+        // UI
+        pixelInput.addEventListener('input', e => {
+            document.getElementById('pixelVal').textContent = e.target.value + 'px';
+        });
+
+        // Global Drag & Drop + Paste
+        const toolMain = document.querySelector('.tool-main');
+
+        // Prevent defaults
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Highlight drop area
+        ['dragenter', 'dragover'].forEach(eventName => {
+            document.body.addEventListener(eventName, () => toolMain.classList.add('highlight'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            document.body.addEventListener(eventName, () => toolMain.classList.remove('highlight'), false);
+        });
+
+        // Handle Drop
+        document.body.addEventListener('drop', handleDrop, false);
+        
+        // Handle Paste
+        document.body.addEventListener('paste', handlePaste, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length) handleFiles(files);
+        }
+
+        function handlePaste(e) {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const blob = items[i].getAsFile();
+                    handleFiles([blob]);
+                    break;
+                }
+            }
+        }
+
+        // Click Upload
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            loadFile(files[0]);
+        }
+
+        function loadFile(file) {
+            readFileAsDataURL(file).then(url => loadImage(url)).then(img => {
+                originalImage = img;
+                previewImg.src = url;
+                document.getElementById('previewArea').style.display = 'block';
+                dropZone.style.display = 'none';
+                processBtn.disabled = false;
+            });
+        }
+
+        processBtn.addEventListener('click', () => {
+            if (!originalImage) return;
+            generateSVG();
+        });
+
+        function generateSVG() {
+            const pixelSize = parseInt(pixelInput.value);
+            const w = originalImage.width;
+            const h = originalImage.height;
+
+            // Use canvas to read pixels
+            const canvas = document.createElement('canvas');
+            const newW = Math.floor(w / pixelSize);
+            const newH = Math.floor(h / pixelSize);
+            canvas.width = newW;
+            canvas.height = newH;
+            
+            const ctx = canvas.getContext('2d');
+            // Draw small to pixelate
+            ctx.drawImage(originalImage, 0, 0, newW, newH);
+            
+            const imgData = ctx.getImageData(0, 0, newW, newH).data;
+            
+            let svgContent = `<svg width="${w}" height="${h}" viewBox="0 0 ${newW} ${newH}" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">`;
+            
+            for (let y = 0; y < newH; y++) {
+                for (let x = 0; x < newW; x++) {
+                    const i = (y * newW + x) * 4;
+                    const r = imgData[i];
+                    const g = imgData[i+1];
+                    const b = imgData[i+2];
+                    const a = imgData[i+3];
+
+                    if (a > 0) {
+                        const hex = rgbToHex(r, g, b);
+                        svgContent += `<rect x="${x}" y="${y}" width="1" height="1" fill="${hex}" />`;
+                    }
+                }
+            }
+            
+            svgContent += '</svg>';
+            
+            // Render to container
+            svgContainer.innerHTML = svgContent;
+            
+            // Find just added svg and set dimensions for preview
+            const svgEl = svgContainer.querySelector('svg');
+            svgEl.style.maxWidth = '100%';
+            svgEl.style.height = 'auto';
+
+            // Download
+            const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'pixel-trace.svg';
+            link.click();
+        }
+
+        function rgbToHex(r, g, b) {
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+
+         // Theme toggle logic (Global)
+        const btn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        btn.addEventListener('click', () => {
+             const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+             html.setAttribute('data-theme', next);
+             localStorage.setItem('theme', next);
+        });
+        html.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
+
+    </script>
+</body>
+</html>
